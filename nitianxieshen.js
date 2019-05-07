@@ -2,14 +2,41 @@ const cheerio = require("cheerio");
 const http = require("http");
 const fs = require("fs");
 
+var arr = [];
+var i = 0;
 var title="";
 var subtitle="";
 var body = "";
-var url = "http://www.nitianxieshen.com/1.html"; //从头开始爬取
-// var url = "http://www.nitianxieshen.com/2915.html"; //结尾的调试
+var map = "http://www.nitianxieshen.com/sitemap.xml"; //从头开始爬取
+var url = "";
 var $ = null;
 
-write();
+init();
+
+function init(){
+    console.log("获取章节列表 >>");
+    http.get(map, function(res){
+        let rawData = "";
+        if (res.statusCode !== 200) throw new Error("status:", res.statusCode);
+        res.setEncoding("utf8");
+        res.on("data", function(chunk){
+            rawData += chunk;
+        });
+        res.on("end", function(){
+            $ = cheerio.load(rawData);
+            arr = $("urlset url loc");
+            if(arr.length>0){
+                console.log("总计章节数:", arr.length, "\r\n爬虫就绪，开始爬取 >>");
+                i = arr.length - 1;
+                write();
+            }
+            else{
+                console.log("初始化失败");
+                return;
+            }
+        });
+    });
+}
 
 function write(){
     load().then(function(){
@@ -27,7 +54,9 @@ function write(){
 }
 
 function load(){
-    if(url=="") return;
+    if(i==0) return;
+    url = arr.eq(i).text();
+    i--;
     var promise = new Promise(function(resolve, reject){
         http.get(url, function(res){
             let rawData = "";

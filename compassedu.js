@@ -2,6 +2,8 @@ const cheerio = require("cheerio");
 const http = require("http");
 const fs = require("fs");
 
+// "http://www.compassedu.hk/sitemap1.txt",
+// "http://www.compassedu.hk/sitemap2.txt",
 var source = [
     "http://m.compassedu.hk/sitemap3.txt",
     "http://m.compassedu.hk/sitemap4.txt",
@@ -17,12 +19,30 @@ var i = 0;
 fs.exists(__dirname+"/compassedu", function(flag){
     if(!flag) fs.mkdirSync(__dirname+"/compassedu");
 })
+fs.exists(__dirname+"/logs", function(flag){
+    if(!flag) fs.mkdirSync(__dirname+"/logs");
+})
 
-init();
+if(fs.existsSync(__dirname+"/logs/compassedu_backup")){
+    let obj = JSON.parse(fs.readFileSync(__dirname+"/logs/compassedu_backup"));
+    i = obj.index;
+    init();
+}
+else{
+    init();
+}
 
 function init(){
     http.get(source[s], function(res){
-        if (res.statusCode !== 200) throw new Error("status:", res.statusCode);
+        if (res.statusCode !== 200) {
+            let obj = {
+                "location": "http.get",
+                "status": res.statusCode,
+                "source": source
+            };
+            fs.appendFileSync("./logs/error.log", JSON.stringify(obj), "utf8");
+            throw new Error(JSON.stringify(obj));
+        }
         let rawData = "";
         res.setEncoding("utf8");
         res.on("data", function(chunk){
@@ -37,8 +57,9 @@ function init(){
             }
             else{
                 for(let m=0;m<sou.length;m++){
-                    arr = arr.concat(sou[i]);
+                    arr = arr.concat(sou[m]);
                 }
+                arr = [...new Set(arr)];
                 console.log("总计: ", arr.length, "条数据", "\n爬虫配置完毕!!\n开始爬取 >>");
                 start();
             }
@@ -51,7 +72,16 @@ function start(){
     console.log(url);
     
     http.get(url, function(res){
-        if (res.statusCode !== 200) throw new Error("status:", res.statusCode);
+        if (res.statusCode !== 200){
+            let obj = {
+                "location": "http.get",
+                "status": res.statusCode,
+                "url": url
+            };
+            fs.appendFileSync("./logs/error.log", JSON.stringify(obj), "utf8");
+            fs.writeFileSync("./logs/compassedu_backup", JSON.stringify({"index": i}), "utf8");
+            throw new Error(JSON.stringify(obj));
+        }
         let rawData = "";
         res.setEncoding("utf8");
         res.on("data", function(chunk){
@@ -71,6 +101,7 @@ function start(){
             });
             if(i>=arr.length) {
                 console.log("爬取结束");
+                fs.unlinkSync("./logs/compassedu_backup");
                 return;
             }
             else {
@@ -78,6 +109,12 @@ function start(){
             }
         });
         res.on("error", function(err){
+            let obj = {
+                "location": "res.on",
+                "status": res.statusCode,
+                "url": url
+            };
+            fs.appendFileSync("./logs/error.log", JSON.stringify(obj), "utf8");
             console.log(err);
         });
     })

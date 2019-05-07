@@ -11,8 +11,18 @@
 使用：
 `node [爬虫名]`
 
+封ip恢复下载：
+等待一段时间后直接再次执行`node [爬虫名]`，会自动恢复到上次下载的位置
+
 ## 爬虫列表
 
-* nitianxieshen.js  小说：逆天邪神  文件：逆天邪神.txt
-* compassedu_no_limit.js    资料：留学者指南    文件：compassedu/
+nitianxieshen.js
 
+* 小说：逆天邪神
+* 文件路径：逆天邪神.txt
+
+compassedu.js
+
+* 资料：留学者指南
+* 文件路径：compassedu/*.html
+* 已加入封ip恢复机制
