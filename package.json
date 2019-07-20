@@ -2,14 +2,14 @@
   "name": "spider",
   "version": "1.0.0",
   "description": "",
-  "main": "compassedu_no_limit.js",
+  "main": "compassedu.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compassedu": "node compassedu_no_limit.js"
+    "compassedu": "node compassedu.js"
   },
   "keywords": [],
   "author": "",
