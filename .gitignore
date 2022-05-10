@@ -1,3 +1,8 @@
 /node_modules
 /逆天邪神.txt
 /compassedu
+/lianqi3kyear
+/log
+/logs
+*.log
+*.logs

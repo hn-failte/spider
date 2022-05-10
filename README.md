@@ -26,3 +26,8 @@ compassedu.js
 * 资料：留学者指南
 * 文件路径：compassedu/*.html
 * 已加入封ip恢复机制
+
+lianqi3kyear.js
+
+* 小说：炼气练了3000年
+* 文件路径：lianqi3kyear/*.txt
